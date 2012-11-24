@@ -1,4 +1,4 @@
-defmodule Ircbot.HybridSupervisor do
+defmodule Elixirbot.HybridSupervisor do
   use Supervisor.Behaviour
 
   import GenX.Supervisor
@@ -7,14 +7,14 @@ defmodule Ircbot.HybridSupervisor do
   def start_link() do
     children = [GenX.Supervisor.Child.new(id: :ircbot_listener_sup,
                                           start_func:
-                                            {Ircbot.Listener.ListenerSupervisor,
-                                             :start_link, []},
+                                            {Elixirbot.Listener.Bot,
+                                             :start, []},
                                           modules:
-                                            [Ircbot.Listener.ListenerSupervisor],
+                                            [Elixirbot.Listener.Bot],
                                           shutdown: :infinity,
-                                          type: :supervisor)]
+                                          type: :worker)]
     sup = GenX.Supervisor.OneForOne.new(children: children)
-    {:ok, _} = start_link(sup, {__MODULE__, nil})
+    {:ok, _} = GenX.Supervisor.start_link(sup, {__MODULE__, nil})
   end
 
   @spec init({term(), nil}), do: {:ok, {{:supervisor.strategy(),

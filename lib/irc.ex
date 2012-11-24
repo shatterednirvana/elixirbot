@@ -1,8 +1,10 @@
-defmodule Ircbot.Client do
+defmodule Elixirbot.Client do
   @moduledoc """
   Responsible for connecting and disconnecting to a server
   as well as sending and retrieving data.
   """
+
+  require :application
 
   require Enum
 
@@ -14,14 +16,17 @@ defmodule Ircbot.Client do
   """
   @spec connect(char_list(), non_neg_integer()), do: {:ok, :gen_tcp.socket()} |
                                                      {:error, char_list()}
-  def connect(address, port // 6697) do
+  def connect(address, port // 6667) do
     case :gen_tcp.connect(address, port, [{:packet, :line}]) do
       {:ok, socket} ->
         IO.puts("Connected to #{address}:#{port}")
 
         {:ok, nickname} = :application.get_env(:ircbot, :ircbot_nickname)
-        send(socket, 'NICK' ++ nickname ++ '\r\n')
-        send(socket, 'USER' ++ nickname ++ '\r\n')
+        :gen_tcp.send(socket, 'NICK ' ++ nickname ++ '\r\n')
+        :gen_tcp.send(socket, 'USER ' ++ nickname ++ ' ' ++ address ++ ' bleh :lebot\r\n')
+        :gen_tcp.send(socket, 'JOIN ' ++ '#merc-devel' ++ '\r\n')
+
+        IO.puts("Using the nickname: #{nickname}")
 
         {:ok, socket}
       {:error, reason} ->
@@ -66,7 +71,7 @@ defmodule Ircbot.Client do
 
     Enum.each(channels,
               fn(channel) ->
-                send(socket, 'JOIN :' ++ channel ++ '\r\n')
+                :gen_tcp.send(socket, 'JOIN ' ++ channel ++ '\r\n')
                 IO.puts("Joined #{channel}")
               end
     )
@@ -76,7 +81,8 @@ defmodule Ircbot.Client do
 
   @spec parse_line(:gen_tcp.socket(), char_list()), do: :ok
   def parse_line(socket, ['PING'|rest]) do
-    send(socket, 'PONG' ++ rest ++ '\r\n')
+    :gen_tcp.send(socket, 'PONG' ++ rest ++ '\r\n')
+    IO.puts("PING")
 
     :ok
   end

@@ -1,6 +1,6 @@
-defmodule Ircbot.Application do
+defmodule Elixirbot.Application do
   @moduledoc """
-  Defines the Ircbot Application.
+  Defines the Elixirbot Application.
   """
 
   use Application.Behaviour
@@ -8,6 +8,9 @@ defmodule Ircbot.Application do
   require :application
 
   require Application
+  require Elixirbot.HybridSupervisor
+  require Elixirbot.Listener.ListenerSupervisor
+
   require IO
   require String
   require OptionParser
@@ -15,11 +18,11 @@ defmodule Ircbot.Application do
   require System
 
   @doc """
-  Starts the Ircbot application in a permanent state.
+  Starts the Elixirbot application in a permanent state.
   """
   @spec start(), do: :ok
   def start() do
-    :ok = Application.start(:ircbot, [type: :permanent])
+    :ok = Application.start(:elixirbot, [dependencies: true, type: :permanent])
   end
 
   @spec main(char_list()), do: no_return()
@@ -49,14 +52,14 @@ defmodule Ircbot.Application do
   end
 
   @doc """
-  Sets up the Ircbot config
+  Sets up the Elixirbot config
   """
   @spec init_config(), do: :ok
   def init_config() do
     cfg = [ircbot_application: :hybrid,
-           ircbot_nickname: 'Wafflebot',
+           ircbot_nickname: 'wafflebot',
            ircbot_channels: ['#merc-devel'],
-           ircbot_server: {'irc.freenode.net', nil}]
+           ircbot_server: {'chat.freenode.net', nil}]
 
     Enum.each(cfg, fn({name, default}) ->
       case :application.get_env(name) do
@@ -67,7 +70,7 @@ defmodule Ircbot.Application do
   end
 
   @doc """
-  Starts the Ircbot supervision tree.
+  Starts the Elixirbot supervision tree.
   """
   @spec start(:normal |
               {:takeover, node()} |
@@ -75,10 +78,14 @@ defmodule Ircbot.Application do
   def start(_, []) do
    :ok = init_config()
 
-   {:ok, sup} = case :application.get_env(:ircbot_application) do
-     {:ok, :hybrid} -> Ircbot.HybridSupervisor.start_link()
+   {:ok, sup} = case :application.get_env(:ircbot, :ircbot_application) do
+     {:ok, :hybrid} -> Elixirbot.HybridSupervisor.start_link()
    end
 
    {:ok, sup, nil}
   end
+
+  def stop(nil) do
+        :ok
+    end
 end
