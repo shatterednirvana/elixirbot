@@ -6,6 +6,9 @@ defmodule Elixirbot.Listener.Bot do
 
   import Elixirbot.Client
 
+  @doc"""
+  Connects to the irc server and starts the handler loop.
+  """
   def start() do
     {:ok, server} = :application.get_env(:ircbot, :ircbot_server)
     case server do
@@ -18,12 +21,15 @@ defmodule Elixirbot.Listener.Bot do
     handle(socket)
   end
 
+  @doc"""
+  Handles incoming TCP messages on the same port.
+  """
   def handle(socket) do
     receive do
-      {:tcp, sock, data} ->
+      {:tcp, ^socket, data} ->
         IO.puts(data)
-        Elixirbot.Client.parse_line(sock, :string.tokens(data, ': '))
-        handle(sock)
+        Elixirbot.Client.parse_line(socket, :string.tokens(data, ': '))
+        handle(socket)
     end
   end
 end

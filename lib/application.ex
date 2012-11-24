@@ -85,6 +85,10 @@ defmodule Elixirbot.Application do
    {:ok, sup, nil}
   end
 
+  @doc"""
+  Stops the Elixirbot supervision tree.
+  """
+  @spec stop(nil), do: :ok
   def stop(nil) do
         :ok
     end

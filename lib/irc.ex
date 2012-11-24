@@ -8,11 +8,11 @@ defmodule Elixirbot.Client do
 
   require Enum
 
-  @doc """
+  @doc"""
   Connets to the given address and return the socket.
 
     address - 'irc.freenode.net' or {199, 195, 193, 196}
-    port    - 6697
+    port    - 6667
   """
   @spec connect(char_list(), non_neg_integer()), do: {:ok, :gen_tcp.socket()} |
                                                      {:error, char_list()}
@@ -23,7 +23,8 @@ defmodule Elixirbot.Client do
 
         {:ok, nickname} = :application.get_env(:ircbot, :ircbot_nickname)
         :gen_tcp.send(socket, 'NICK ' ++ nickname ++ '\r\n')
-        :gen_tcp.send(socket, 'USER ' ++ nickname ++ ' ' ++ address ++ ' bleh :lebot\r\n')
+        :gen_tcp.send(socket, 'USER ' ++ nickname ++ ' ' ++
+                      address ++ ' bleh :elixirbot\r\n')
 
         IO.puts("Using the nickname: #{nickname}")
 
@@ -36,7 +37,7 @@ defmodule Elixirbot.Client do
     end
   end
 
-  @doc """
+  @doc"""
   Closes a connection.
   """
   @spec close(:gen_tcp.socket()), do: :ok | {:error, char_list()}
@@ -53,7 +54,7 @@ defmodule Elixirbot.Client do
     end
   end
 
-  @doc """
+  @doc"""
   Send data and wait for a reply.
   """
   @spec send(:gen_tcp.socket(), :gen_tcp.packet()), do:
@@ -64,6 +65,9 @@ defmodule Elixirbot.Client do
     :gen_tcp.recv(socket, 0)
   end
 
+  @doc"""
+  Responds to a message accordingly.
+  """
   @spec parse_line(:gen_tcp.socket(), char_list()), do: :ok
   def parse_line(socket, [_,'376'|_]) do
     {:ok, channels} = :application.get_env(:ircbot, :ircbot_channels)
@@ -85,7 +89,6 @@ defmodule Elixirbot.Client do
 
     :ok
   end
-
 
   @spec parse_line(:gen_tcp.socket(), char_list()), do: :ok
   def parse_line(_, _) do
