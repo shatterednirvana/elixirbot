@@ -54,6 +54,7 @@ defmodule Ircbot.Application do
   @spec init_config(), do: :ok
   def init_config() do
     cfg = [ircbot_application: :hybrid,
+           ircbot_nickname: "Wafflebot",
            ircbot_servers: [{"irc.freenode.net", nil}]]
 
     each(cfg, fn({name, default}) ->
