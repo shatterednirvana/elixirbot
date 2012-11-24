@@ -58,7 +58,7 @@ defmodule Elixirbot.Application do
   def init_config() do
     cfg = [ircbot_application: :hybrid,
            ircbot_nickname: 'exbot',
-           ircbot_channels: ['#merc-devel'],
+           ircbot_channels: ['#merc-devel', '#terragenesis'],
            ircbot_server: {'chat.freenode.net', nil}]
 
     Enum.each(cfg, fn({name, default}) ->
