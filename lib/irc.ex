@@ -18,7 +18,8 @@ defmodule Ircbot.Client do
       {:ok, socket} ->
         IO.puts("Connected to #{address}:#{port}")
 
-        nickname = binary_to_list(:application.get_env(:ircbot_nickname))
+        {:ok, nick} = :application.get_env(:ircbot, :ircbot_nickname)
+        nickname = binary_to_list(nick)
         :gen_tcp.send(socket, 'NICK' ++ nickname ++ '\r\n')
         :gen_tcp.send(socket, 'USER' ++ nickname ++ '\r\n')
 
