@@ -12,7 +12,7 @@ defmodule Ircbot.Client do
     address - 'irc.freenode.net' or {199, 195, 193, 196}
     port    - 6697
   """
-  @spec connect(String.t(), integer()), do: {:ok, :gen_tcp.socket()} | {:error, term()}
+  @spec connect(String.t(), non_neg_integer()), do: {:ok, :gen_tcp.socket()} | {:error, term()}
   def connect(address, port // 6697) do
     case :gen_tcp.connect(binary_to_list(address), port, [{:packet, :line}])  do
       {:ok, socket} ->
