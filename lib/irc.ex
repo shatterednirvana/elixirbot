@@ -56,7 +56,9 @@ defmodule Ircbot.Client do
   end
 
   def parse_line(socket, [_,"376"|_]) do
-    Enum.each(:application.get_env(:ircbot_channels),
+    {:ok, channels} = :application.get_env(:ircbot, :ircbot_channels)
+
+    Enum.each(channels,
               fn(channel) ->
                 TCP.send(socket, "JOIN :" <> channel <> "\r\n")
               end

@@ -56,8 +56,8 @@ defmodule Ircbot.Application do
   def init_config() do
     cfg = [ircbot_application: :hybrid,
            ircbot_nickname: "Wafflebot",
-           ircbot_channels: [freenode: "#merc-devel"],
-           ircbot_servers: [freenode: {"irc.freenode.net", nil}]]
+           ircbot_channels: ["#merc-devel"],
+           ircbot_server: {"irc.freenode.net", nil}]
 
     each(cfg, fn({name, default}) ->
       case :application.get_env(name) do
