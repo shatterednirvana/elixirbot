@@ -12,15 +12,14 @@ defmodule Ircbot.Client do
     address - 'irc.freenode.net' or {199, 195, 193, 196}
     port    - 6697
   """
-  @spec connect(String.t(), non_neg_integer()), do: {:ok, :gen_tcp.socket()} |
-                                                    {:error, char_list()}
+  @spec connect(char_list(), non_neg_integer()), do: {:ok, :gen_tcp.socket()} |
+                                                     {:error, char_list()}
   def connect(address, port // 6697) do
-    case :gen_tcp.connect(binary_to_list(address), port, [{:packet, :line}])  do
+    case :gen_tcp.connect(address, port, [{:packet, :line}]) do
       {:ok, socket} ->
         IO.puts("Connected to #{address}:#{port}")
 
-        {:ok, nick} = :application.get_env(:ircbot, :ircbot_nickname)
-        nickname = binary_to_list(nick)
+        {:ok, nickname} = :application.get_env(:ircbot, :ircbot_nickname)
         send(socket, 'NICK' ++ nickname ++ '\r\n')
         send(socket, 'USER' ++ nickname ++ '\r\n')
 
@@ -28,6 +27,7 @@ defmodule Ircbot.Client do
       {:error, reason} ->
         IO.puts("Connection could not be established.")
         IO.puts(reason)
+
         {:error, reason}
     end
   end
@@ -42,6 +42,7 @@ defmodule Ircbot.Client do
         address = Enum.join(tuple_to_list(t_address), ".")
         :gen_tcp.close(socket)
         IO.puts("Closed connection on #{address}:#{port}")
+
         :ok
       {:error, reason} ->
         {:error, reason}
