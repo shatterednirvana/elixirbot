@@ -10,10 +10,9 @@ defmodule Ircbot.Application do
   require Application
   require IO
   require String
-
-  import OptionParser
-  import Enum
-  import System
+  require OptionParser
+  require Enum
+  require System
 
   @doc """
   Starts the Ircbot application in a permanent state.
@@ -27,10 +26,10 @@ defmodule Ircbot.Application do
   def main(args) do
     args = lc arg inlist args, do: list_to_binary(arg)
 
-    {opts, _} = parse(args, [flags: [:help,
-                                     :version],
-                             aliases: [h: :help,
-                                       v: :version]])
+    {opts, _} = OptionParser.parse(args, [flags: [:help,
+                                                  :version],
+                                          aliases: [h: :help,
+                                                    v: :version]])
     if opts[:version] do
       IO.puts("Simple IRCbot written in Elixir - 0.1")
     end
@@ -43,7 +42,7 @@ defmodule Ircbot.Application do
     end
 
     if opts[:help] || opts[:version] do
-      halt(2)
+      System.halt(2)
     end
 
     start()
@@ -59,7 +58,7 @@ defmodule Ircbot.Application do
            ircbot_channels: ["#merc-devel"],
            ircbot_server: {"irc.freenode.net", nil}]
 
-    each(cfg, fn({name, default}) ->
+    Enum.each(cfg, fn({name, default}) ->
       case :application.get_env(name) do
         :undefined -> :application.set_env(:ircbot, name, default)
         {:ok, _} -> :ok
@@ -70,7 +69,9 @@ defmodule Ircbot.Application do
   @doc """
   Starts the Ircbot supervision tree.
   """
-  @spec start(:normal | {:takeover, node()} | {:failover, node()}, []), do: {:ok, pid(), nil}
+  @spec start(:normal |
+              {:takeover, node()} |
+              {:failover, node()}, []), do: {:ok, pid(), nil}
   def start(_, []) do
    :ok = init_config()
 
