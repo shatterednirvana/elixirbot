@@ -1,0 +1,2 @@
+Elixirbot.start
+ExUnit.start

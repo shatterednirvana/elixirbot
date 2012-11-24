@@ -1,0 +1,4 @@
+[ "exlager": {:git,"https://github.com/khia/exlager.git","4eb7a4cc30fabe39520c0ad7ba760d3357f8e6d7",[]},
+  "genx": {:git,"https://github.com/yrashk/genx.git","f9f51e6065ac2a82a82f9dfed9e6337c41e4b9aa",[]},
+  "jsx": {:git,"https://github.com/talentdeficit/jsx.git","cb14b92a228e51f7bdcaa7eb17f035e4a5c0b47d",[]},
+  "lager": {:git,"https://github.com/basho/lager.git","d6482649420a900f1c8d8830584235ff740d4a06",[]} ]
