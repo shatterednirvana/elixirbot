@@ -57,7 +57,7 @@ defmodule Elixirbot.Application do
   @spec init_config(), do: :ok
   def init_config() do
     cfg = [ircbot_application: :hybrid,
-           ircbot_nickname: 'wafflebot',
+           ircbot_nickname: 'exbot',
            ircbot_channels: ['#merc-devel'],
            ircbot_server: {'chat.freenode.net', nil}]
 
