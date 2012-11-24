@@ -12,25 +12,38 @@ defmodule Ircbot.Client do
     address - 'irc.freenode.net' or {199, 195, 193, 196}
     port    - 6697
   """
+  @spec connect(String.t(), integer()), do: {:ok, :gen_tcp.socket()} | {:error, term()}
   def connect(address, port // 6697) do
-    case :gen_tcp.connect(address, port, [{:packet, :line}])  do
+    case :gen_tcp.connect(binary_to_list(address), port, [{:packet, :line}])  do
       {:ok, socket} ->
         IO.puts("Connected to #{address}:#{port}")
-        socket
+
+        nickname = binary_to_list(:application.get_env(:ircbot_nickname))
+        :gen_tcp.send(socket, 'NICK' ++ nickname ++ '\r\n')
+        :gen_tcp.send(socket, 'USER' ++ nickname ++ '\r\n')
+
+        {:ok, socket}
       {:error, reason} ->
         IO.puts("Connection could not be established.")
         IO.puts(reason)
+        {:error, reason}
     end
   end
 
   @doc """
   Closes a connection.
   """
+  @spec close(:gen_tcp.socket()), do: :ok | {:error, term()}
   def close(socket) do
-    {:ok, {t_address, port}} = :inet.peername(socket)
-    address = join(tuple_to_list(t_address), ".")
-    :gen_tcp.close(socket)
-    IO.puts("Closed connection on #{address}:#{port}")
+    case :int.peername(socket) do
+      {:ok, {t_address, port}} ->
+        address = join(tuple_to_list(t_address), ".")
+        :gen_tcp.close(socket)
+        IO.puts("Closed connection on #{address}:#{port}")
+        :ok
+      {:error, reason} ->
+        {:error, reason}
+    end
   end
 
   @doc """

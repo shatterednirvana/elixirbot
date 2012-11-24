@@ -23,6 +23,7 @@ defmodule Ircbot.Application do
     :ok = Application.start(:ircbot, [type: :permanent])
   end
 
+  @spec main([char]), do: no_return()
   def main(args) do
     args = lc arg inlist args, do: list_to_binary(arg)
 
@@ -55,7 +56,8 @@ defmodule Ircbot.Application do
   def init_config() do
     cfg = [ircbot_application: :hybrid,
            ircbot_nickname: "Wafflebot",
-           ircbot_servers: [{"irc.freenode.net", nil}]]
+           ircbot_channels: [freenode: "#merc-devel"],
+           ircbot_servers: [freenode: {"irc.freenode.net", nil}]]
 
     each(cfg, fn({name, default}) ->
       case :application.get_env(name) do
