@@ -13,7 +13,7 @@ defmodule Ircbot.Client do
     port    - 6697
   """
   @spec connect(String.t(), non_neg_integer()), do: {:ok, :gen_tcp.socket()} |
-                                                    {:error, term()}
+                                                    {:error, char_list()}
   def connect(address, port // 6697) do
     case :gen_tcp.connect(binary_to_list(address), port, [{:packet, :line}])  do
       {:ok, socket} ->
@@ -21,8 +21,8 @@ defmodule Ircbot.Client do
 
         {:ok, nick} = :application.get_env(:ircbot, :ircbot_nickname)
         nickname = binary_to_list(nick)
-        :gen_tcp.send(socket, 'NICK' ++ nickname ++ '\r\n')
-        :gen_tcp.send(socket, 'USER' ++ nickname ++ '\r\n')
+        send(socket, 'NICK' ++ nickname ++ '\r\n')
+        send(socket, 'USER' ++ nickname ++ '\r\n')
 
         {:ok, socket}
       {:error, reason} ->
@@ -35,7 +35,7 @@ defmodule Ircbot.Client do
   @doc """
   Closes a connection.
   """
-  @spec close(:gen_tcp.socket()), do: :ok | {:error, term()}
+  @spec close(:gen_tcp.socket()), do: :ok | {:error, char_list()}
   def close(socket) do
     case :int.peername(socket) do
       {:ok, {t_address, port}} ->
@@ -51,27 +51,39 @@ defmodule Ircbot.Client do
   @doc """
   Send data and wait for a reply.
   """
+  @spec send(:gen_tcp.socket(), :gen_tcp.packet()), do:
+                                              {:ok, :gen_tcp.packet()} |
+                                              {:error, :gen_tcp.reason()}
   def send(socket, data) do
     :ok = :gen_tcp.send(socket, data)
     :gen_tcp.recv(socket, 0)
   end
 
-  def parse_line(socket, [_,"376"|_]) do
+  @spec parse_line(:gen_tcp.socket(), char_list()), do: :ok
+  def parse_line(socket, [_,'376'|_]) do
     {:ok, channels} = :application.get_env(:ircbot, :ircbot_channels)
 
     Enum.each(channels,
               fn(channel) ->
-                TCP.send(socket, "JOIN :" <> channel <> "\r\n")
+                send(socket, 'JOIN :' ++ channel ++ '\r\n')
+                IO.puts("Joined #{channel}")
               end
     )
+
+    :ok
   end
 
-  def parse_line(socket, ["PING"|rest]) do
-    TCP.send(socket, "PONG" <> rest <> "\r\n")
+  @spec parse_line(:gen_tcp.socket(), char_list()), do: :ok
+  def parse_line(socket, ['PING'|rest]) do
+    send(socket, 'PONG' ++ rest ++ '\r\n')
+
+    :ok
   end
 
+
+  @spec parse_line(:gen_tcp.socket(), char_list()), do: :ok
   def parse_line(_, _) do
-    0
+    :ok
   end
 
 end

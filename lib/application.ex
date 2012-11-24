@@ -22,7 +22,7 @@ defmodule Ircbot.Application do
     :ok = Application.start(:ircbot, [type: :permanent])
   end
 
-  @spec main([char]), do: no_return()
+  @spec main(char_list()), do: no_return()
   def main(args) do
     args = lc arg inlist args, do: list_to_binary(arg)
 
