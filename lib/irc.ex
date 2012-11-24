@@ -24,7 +24,6 @@ defmodule Elixirbot.Client do
         {:ok, nickname} = :application.get_env(:ircbot, :ircbot_nickname)
         :gen_tcp.send(socket, 'NICK ' ++ nickname ++ '\r\n')
         :gen_tcp.send(socket, 'USER ' ++ nickname ++ ' ' ++ address ++ ' bleh :lebot\r\n')
-        :gen_tcp.send(socket, 'JOIN ' ++ '#merc-devel' ++ '\r\n')
 
         IO.puts("Using the nickname: #{nickname}")
 
