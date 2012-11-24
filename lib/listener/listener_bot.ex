@@ -24,11 +24,6 @@ defmodule Elixirbot.Listener.Bot do
         IO.puts(data)
         Elixirbot.Client.parse_line(sock, :string.tokens(data, ': '))
         handle(sock)
-#      quit ->
-#        IO.puts("Quiting...")
-#        Elixirbot.Client.close(socket)
-#
-#        System.halt(0)
     end
   end
 end

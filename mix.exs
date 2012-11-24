@@ -12,13 +12,11 @@ defmodule Elixirbot.Mixfile do
   end
 
   def application do
-    [applications: [:genx,
-                    :jsx],
+    [applications: [:genx],
      mod: {Elixirbot.Application, []}]
   end
 
   defp deps do
-    [{:genx, github: "yrashk/genx"},
-     {:jsx, github: "talentdeficit/jsx"}]
+    [{:genx, github: "yrashk/genx"}]
   end
 end
